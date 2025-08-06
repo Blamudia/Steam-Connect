@@ -10,61 +10,6 @@ if (typeof GMSERVER_IP === 'undefined') {
 	console.error("config.js is not loaded. Please make sure that the config.js file is loaded before main.js");
 }
 
-/* Apply appearance settings where applicable */
-if (!SHOW_TITLE) document.getElementById("title").style.display = "none";
-if (!SHOW_MIDDLE_IMAGE) document.getElementById("titleimg").style.display = "none";
-if (!ANIMATED_BACKGROUND) document.getElementById("background").style.animation = "none";
-if (ANIMATED_TITLE) {
-	let title = document.getElementById("title");
-	let titleimg = document.getElementById("titleimg");
-	document.addEventListener("mousemove", (e) => {
-		let x = e.clientX / window.innerWidth;
-		let y = e.clientY / window.innerHeight;
-		title.style.transform = `translate(-50%, -50%) translate(${x * 30 - 10}px, ${y * 30 - 10}px)`;
-		titleimg.style.transform = `translate(-50%, -50%) translate(${x * 20 - 10}px, ${y * 20 - 10}px)`;
-	});
-}
-if (PAGE_TITLE){document.title = PAGE_TITLE;
-document.getElementById("title").innerHTML = PAGE_TITLE;}
-else document.getElementById("title").style.display = "none";
-if (MIDDLE_IMAGE) document.getElementById("titleimg").src = MIDDLE_IMAGE;
-else document.getElementById("titleimg").style.display = "none";
-
-/* Apply footer settings */
-if (!SHOW_FOOTER) document.querySelector('footer').style.display = "none";
-if (FOOTER_OPEN) {
-	document.getElementById("helpFooter").classList.remove("close");
-	document.getElementById("helpBtnFooter").style.display = "none";
-}
-if (!SHOW_GMOD_COMMAND) document.getElementById("gmod-help").style.display = "none";
-if (!SHOW_STEAM_CONNECT) document.getElementById("steam-help").style.display = "none";
-if (!SHOW_DIRECT_CONNECT) document.getElementById("direct-help").style.display = "none";
-if (!SHOW_CSS_CONTENT) document.getElementById("error-help").style.display = "none";
-if (!SHOW_CREDITS) document.getElementById("credits").style.display = "none";
-if (CREDITS_TEXT) document.getElementById("credits").innerHTML = CREDITS_TEXT;
-
-/* Helper Functions */
-function copyCommand() {
-	navigator.clipboard.writeText(document.getElementById("GCMD").innerHTML);
-	let btn = document.getElementById("copy-btn");
-	btn.classList.remove("fa-regular");
-	btn.classList.remove("fa-copy");
-	btn.classList.add("fa-solid");
-	btn.classList.add("fa-check");
-	setTimeout(() => {
-		btn.classList.remove("fa-solid");
-		btn.classList.remove("fa-check");
-		btn.classList.add("fa-regular");
-		btn.classList.add("fa-copy");
-	}, 1500)
-}
-
-function helpClicked() {
-	document.getElementById("helpFooter").classList.remove("close");
-	document.getElementById("helpBtnFooter").style.visibility = "hidden";
-	document.getElementById("helpBtnFooter").style.opacity = 0;
-}
-
 function launchUri(uri) {
 	var parent, iframe;
 	function createHiddenIframe(parent) {
@@ -95,23 +40,10 @@ let urlParams = new URLSearchParams(window.location.search);
 let ip = urlParams.get('ip');
 let port = urlParams.get('port');
 let pass = urlParams.get('pass');
-// If any parameter is missing, try to get it from the config file
+
 if (!ip) ip = GMSERVER_IP;
 if (!port) port = GMSERVER_PORT;
-// If ip is still missing we can't connect so hide everything that requires it
-if (!ip) {
-	document.getElementById("error-help").style.display = "block";
-	document.getElementById("error-help").innerHTML = "The IP address is missing. Please provide it as a query parameter.";
-	document.getElementById("gmod-help").style.display = "none";
-	document.getElementById("steam-help").style.display = "none";
-	document.getElementById("direct-help").style.display = "none";
-	document.getElementById("credits").style.display = "none";
-	document.getElementById("helpFooter").classList.remove("close");
-	document.getElementById("helpBtnFooter").style.display = "none";
-}
-// If the port is missing, set it to 27015
 if (!port) port = "27015";
-// If the pass is missing, set it to an empty string
 if (!pass) pass = "";
 
 // Only if ip is provided, we can do everything else
@@ -122,15 +54,7 @@ if(ip) {
 	// GMod Command
 	let gmodcmd = "connect " + ip + ":" + port;
 	if (pass != "") gmodcmd += "; password " + pass + ";";
-	// Set Footer Info
-	let gmodcmdinfo = document.getElementById("GCMD");
-	let steaminfo = document.getElementById("STEAMJOIN");
-	let serverinfo = document.getElementById("SERVER");
-	let passinfo = document.getElementById("PASS");
-	gmodcmdinfo.innerHTML = gmodcmd;
-	steaminfo.href = steamconnectUrl;
-	serverinfo.innerHTML = ip + ":" + port;
-	if (pass != "") passinfo.innerHTML = `<i class="fa-solid fa-key"></i> ` + pass;
+	
 	// Push Steam Connect
 	if (AUTO_CONNECT) launchUri(steamconnectUrl)
 }
